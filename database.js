@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 
-const DBSOURCE = "bok.db"
+const DBSOURCE = "quiz.db"
 
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
@@ -10,21 +10,23 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       throw err
     }else{
         console.log('Connected to the SQlite database.')
-        db.run(`CREATE TABLE bok (
-            bokId INTEGER PRIMARY KEY,
-            bokTitel TEXT,
-            bokForfattare TEXT,
-            bokIsbn TEXT,
-            bokPris REAL
+        db.run(`CREATE TABLE user (
+            id INTEGER PRIMARY KEY,
+            email TEXT,
+            username TEXT,
+            password TEXT,
+            user_level TEXT,
+            questions_answered INTEGER,
+            questions_correct INTEGER
             )`,(err) => {
         if (err) {
             // Table already created
         }else{
             // Table just created, creating some rows
-            const insert = 'INSERT INTO bok (bokTitel, bokForfattare, bokIsbn, bokPris) VALUES (?,?,?,?)';
-            db.run(insert, ["Old Man and the Sea", "Ernest Hemingway", "12345-6", 89])
+            const insert = 'INSERT INTO user (email, username, password, user_level, questions_answered, questions_correct) VALUES (?,?,?,?,?,?)';
+            db.run(insert, ["bosse@hotbrev.com", "BossemanneN", "guest123", "user",22,2])
         }
-    })  
+    })
     }
 })
 

@@ -17,8 +17,8 @@ app.listen(HTTP_PORT, () => {
     console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
 });
 
-app.get("/api/bok", (req, res, next) => {
-    const sql = "select * from bok";
+app.get("/api/quiz", (req, res, next) => {
+    const sql = "select * from quiz";
     const params = [];
     db.all(sql, params, (err, rows) => {
         if (err) {
@@ -27,14 +27,14 @@ app.get("/api/bok", (req, res, next) => {
         }
         res.json({
             "message":"success",
-            "bok":rows
+            "quiz":rows
         })
       });
 });
 
 
-app.get("/api/bok/:id", (req, res, next) => {
-    const sql = "select * from bok where bokId = ?";
+app.get("/api/quiz/:id", (req, res, next) => {
+    const sql = "select * from quiz where id = ?";
     const params = [req.params.id];
     db.get(sql, params, (err, row) => {
         if (err) {
@@ -43,13 +43,33 @@ app.get("/api/bok/:id", (req, res, next) => {
         }
         res.json({
             "message":"success",
-            "bok":row
+            "quiz":row
         })
       });
 });
 
 
-app.post("/api/bok/", (req, res, next) => {
+
+
+
+
+app.get("/api/user", (req, res, next) => {
+    const sql = "select * from user";
+    const params = [];
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error":err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "USER":rows
+        })
+    });
+});
+
+/*
+app.post("/api/quiz/", (req, res, next) => {
     const errors = [];
     if (!req.body.bokIsbn){
         errors.push("Inget ISBN");
@@ -109,7 +129,7 @@ app.delete("/api/bok/:id", (req, res, next) => {
             res.json({"message":"deleted", rows: this.changes})
     });
 })
-
+*/
 // Root path
 app.get("/", (req, res, next) => {
     res.json({"message":"Ok"})
