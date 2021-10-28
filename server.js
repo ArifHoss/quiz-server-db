@@ -92,7 +92,6 @@ app.get("/api/quizzes/:category/:type/:nr", (req,res,next) => {
 app.get("/api/user/:username/:password", (req, res, next) => {
     const sql = "select * from user WHERE username = ?";
     const params = [req.params.username];
-    let USER = ""
 
     db.get(sql, params, (err, row) => {
         if (err) {
