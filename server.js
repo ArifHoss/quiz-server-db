@@ -48,6 +48,39 @@ app.get("/api/quiz/:id", (req, res, next) => {
       });
 });
 
+app.get("/api/quizzes/:nr", (req,res,next) => {
+    const sql = "SELECT * FROM quiz ORDER BY RANDOM() LIMIT ?";
+    const params = [req.params.nr];
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error":err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "quiz":rows
+        })
+    });
+});
+
+
+app.get("/api/quizzes/:category/:type/:nr", (req,res,next) => {
+    const sql = "SELECT * FROM quiz WHERE category = ? AND type = ? ORDER BY RANDOM() LIMIT ?";
+    const params = [req.params.category,req.params.type,req.params.nr];
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error":err.message});
+            return;
+        }
+        res.json({
+            "message":"success",
+            "quiz":rows
+        })
+    });
+});
+
+
+
 
 
 
@@ -68,20 +101,20 @@ app.get("/api/user", (req, res, next) => {
     });
 });
 
-/*
-app.post("/api/quiz/", (req, res, next) => {
+
+app.post("/api/user", (req, res, next) => {
     const errors = [];
-    if (!req.body.bokIsbn){
-        errors.push("Inget ISBN");
+    if (!req.body.username || !req.body.email || !req.body.password){
+        errors.push("Saknar data för att skapa konto");
     }
     const data = {
-        bokTitel: req.body.bokTitel,
-        bokForfattare: req.body.bokForfattare,
-        bokIsbn: req.body.bokIsbn,
-        bokPris: req.body.bokPris
+        email: req.body.email,
+        username: req.body.username,
+        password: req.body.password,
+        user_level : "user"
     };
-    const sql = 'INSERT INTO bok (bokTitel, bokForfattare, bokIsbn, bokPris) VALUES (?,?,?,?)';
-    const params = [data.bokTitel, data.bokForfattare, data.bokIsbn, data.bokPris];
+    const sql = 'INSERT INTO user (email, username, password, user_level) VALUES (?,?,?,?)';
+    const params = [data.email, data.username, data.password, data.user_level];
     db.run(sql, params, function (err, result) {
         if (err){
             res.status(400).json({"error": err.message})
@@ -89,12 +122,13 @@ app.post("/api/quiz/", (req, res, next) => {
         }
         res.json({
             "message": "success",
-            "bok": data,
+            "user": data,
             "id" : this.lastID
         })
     });
 })
 
+/*  TODO: put med statistik över antal frågor
 app.put("/api/bok/:id", (req, res, next) => {
     const data = {
         bokTitel: req.body.bokTitel,
