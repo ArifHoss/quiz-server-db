@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require('cors');
 const db = require("./database.js");
+const bcrypt = require('bcrypt');
+
+
 
 app.use(cors())
 app.use(express.static('public'))
@@ -86,19 +89,29 @@ app.get("/api/quizzes/:category/:type/:nr", (req,res,next) => {
 
 
 
-app.get("/api/user", (req, res, next) => {
-    const sql = "select * from user";
-    const params = [];
-    db.all(sql, params, (err, rows) => {
+app.get("/api/user/:username/:password", (req, res, next) => {
+    const sql = "select * from user WHERE username = ?";
+    const params = [req.params.username];
+    let USER = ""
+
+    let anv = db.get(sql, params, (err, row) => {
         if (err) {
-            res.status(400).json({"error":err.message});
+            res.status(400).json({"error": err.message});
             return;
         }
-        res.json({
-            "message":"success",
-            "USER":rows
-        })
+        USER = row
     });
+
+    console.log(USER);
+    const isValidPass = bcrypt.compareSync(req.params.password, USER.password);
+    if(isValidPass){
+        res.json({"message":"success", "user":anv})
+    }else{
+        res.json({"message":"invalid username or password"})
+    }
+
+
+
 });
 
 
@@ -110,7 +123,7 @@ app.post("/api/user", (req, res, next) => {
     const data = {
         email: req.body.email,
         username: req.body.username,
-        password: req.body.password,
+        password: bcrypt.hashSync(req.body.password, 10),
         user_level : "user"
     };
     const sql = 'INSERT INTO user (email, username, password, user_level) VALUES (?,?,?,?)';
@@ -127,6 +140,9 @@ app.post("/api/user", (req, res, next) => {
         })
     });
 })
+
+
+
 
 /*  TODO: put med statistik över antal frågor
 app.put("/api/bok/:id", (req, res, next) => {
@@ -163,6 +179,10 @@ app.delete("/api/bok/:id", (req, res, next) => {
             res.json({"message":"deleted", rows: this.changes})
     });
 })
+
+
+
+
 */
 // Root path
 app.get("/", (req, res, next) => {
