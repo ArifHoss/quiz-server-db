@@ -79,8 +79,34 @@ app.get('/api/quizzes/:category/:type/:nr', (req, res, next) => {
     })
 })
 
-//skapa post & del för quiz
+//skapa del för quiz
+app.post('/api/quiz',(req,res) =>{
+    const data ={
+        category : req.body.category,
+        type : req.body.type,
+        question:req.body.question,
+        a1 : req.body.a1,
+        a2 : req.body.a2,
+        a3 : req.body.a3,
+        a4 : req.body.a4,
+        correct_answer:req.body.correct_answer,
+        imgLink : req.body.imgLink
 
+    }
+    const sql = "INSERT into quiz(category, type, question, a1,a2,a3,a4,correct_answer,imgLink) VALUES (?,?,?,?,?,?,?,?,?)"
+    const params = [data.category,data.type,data.question, data.a1, data.a2, data.a3, data.a4, data.correct_answer, data.imgLink]
+    db.run(sql, params, function(err, result){
+        if(err){
+            res.status(400).json({error:err.message})
+            return
+        }
+        res.json({
+            message: 'Question added to Database',
+            question: data,
+            id: this.lastID,
+        })
+    })
+})
 
 
 app.get('/api/user/:username/:password', (req, res, next) => {
@@ -118,7 +144,12 @@ app.post('/api/user', (req, res, next) => {
     const sqlValidation = 'SELECT * from USER where username = ? OR email = ? '
     const paramsValidation = [data.username, data.email]
     db.get(sqlValidation, paramsValidation, function(err, result){
+        if (err) {
+            res.status(400).json({ error: err.message })
+            return
+        }
         if(result){
+
             res.json({
                 message: 'Username or Email is taken',
 
