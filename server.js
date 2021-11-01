@@ -79,6 +79,10 @@ app.get('/api/quizzes/:category/:type/:nr', (req, res, next) => {
     })
 })
 
+//skapa post & del för quiz
+
+
+
 app.get('/api/user/:username/:password', (req, res, next) => {
     const sql = 'select * from user WHERE username = ?'
     const params = [req.params.username]
@@ -111,23 +115,40 @@ app.post('/api/user', (req, res, next) => {
         password: bcrypt.hashSync(req.body.password, 10),
         user_level: 'user',
     }
-    const sql =
-        'INSERT INTO user (email, username, password, user_level) VALUES (?,?,?,?)'
-    const params = [data.email, data.username, data.password, data.user_level]
-    db.run(sql, params, function (err, result) {
-        if (err) {
-            res.status(400).json({ error: err.message })
-            return
-        }
-        res.json({
-            message: 'success',
-            user: data,
-            id: this.lastID,
+    const sqlValidation = 'SELECT * from USER where username = ? OR email = ? '
+    const paramsValidation = [data.username, data.email]
+    db.get(sqlValidation, paramsValidation, function(err, result){
+        if(result){
+            res.json({
+                message: 'Username or Email is taken',
+
+            })}
+        else{
+            const sql =
+                'INSERT INTO user (email, username, password, user_level) VALUES (?,?,?,?)'
+            const params = [data.email, data.username, data.password, data.user_level]
+            db.run(sql, params, function (err, result) {
+                if (err) {
+                    res.status(400).json({ error: err.message })
+                    return
+                }
+                res.json({
+                    message: 'success',
+                    user: data,
+                    id: this.lastID,
+                })
+            })
+            }
         })
-    })
+
+
+
+  /*
+
+    */
 })
 
-/*  TODO: put med statistik över antal frågor
+/*  TODO: put & get med statistik över antal frågor
 app.put("/api/bok/:id", (req, res, next) => {
     const data = {
         bokTitel: req.body.bokTitel,
