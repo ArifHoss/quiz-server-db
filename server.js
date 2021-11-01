@@ -79,7 +79,6 @@ app.get('/api/quizzes/:category/:type/:nr', (req, res, next) => {
     })
 })
 
-//skapa del för quiz
 app.post('/api/quiz',(req,res) =>{
     const data ={
         category : req.body.category,
@@ -108,6 +107,18 @@ app.post('/api/quiz',(req,res) =>{
     })
 })
 
+app.delete('/api/quiz', (req,res) =>{
+    const sql = "DELETE FROM quiz WHERE ID = ?"
+    const params = [req.body.id]
+    db.run(sql, params, function(err){
+        if(err){
+            res.status(400).json({error:err.message})
+        }
+        res.json({
+            message:"successfully deleted question with id "+req.body.id
+        })
+    })
+})
 
 app.get('/api/user/:username/:password', (req, res, next) => {
     const sql = 'select * from user WHERE username = ?'
@@ -149,7 +160,6 @@ app.post('/api/user', (req, res, next) => {
             return
         }
         if(result){
-
             res.json({
                 message: 'Username or Email is taken',
 
