@@ -189,6 +189,31 @@ app.post('/api/user', (req, res, next) => {
     */
 })
 
+
+app.put('/api/user/stats', (req,res) =>{
+    const data = {
+        user_id : req.body.user_id,
+        questions_answered:req.body.questions_answered,
+        questions_correct: req.body.questions_correct
+    }
+    const sql = "UPDATE user SET questions_answered = ?, questions_correct = ? WHERE id = ?"
+    const params = [data.questions_answered,data.questions_correct,data.user_id]
+
+    db.run(sql, params, function(err){
+        if(err){
+            res.status(400).json({"error": err.message})
+            return;
+        }
+        res.json({
+            "message":"successfully updated stats",
+            "user id":data.user_id
+
+
+        })
+    })
+
+
+})
 /*  TODO: put & get med statistik över antal frågor
 app.put("/api/bok/:id", (req, res, next) => {
     const data = {
