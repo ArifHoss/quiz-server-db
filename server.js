@@ -135,12 +135,12 @@ app.get('/api/user/:username/:password', (req, res, next) => {
             row.password
         )
         if (isValidPass) {
-            res.json({ message: 'success', user: row })
+            res.json({ message: 'Success', user: row })
         } else {
-            res.json({ message: 'invalid username or password' })
+            res.json({ message: 'Invalid Username or Password' })
         }}
         else{
-            res.json({message:"user not found"})
+            res.json({message:"Username not found"})
         }
     })
 })
