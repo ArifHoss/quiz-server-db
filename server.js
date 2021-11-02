@@ -129,6 +129,7 @@ app.get('/api/user/:username/:password', (req, res, next) => {
             res.status(400).json({ error: err.message })
             return
         }
+        if(row){
         const isValidPass = bcrypt.compareSync(
             req.params.password,
             row.password
@@ -137,6 +138,9 @@ app.get('/api/user/:username/:password', (req, res, next) => {
             res.json({ message: 'success', user: row })
         } else {
             res.json({ message: 'invalid username or password' })
+        }}
+        else{
+            res.json({message:"user not found"})
         }
     })
 })
@@ -189,7 +193,6 @@ app.post('/api/user', (req, res, next) => {
     */
 })
 
-
 app.put('/api/user/stats', (req,res) =>{
     const data = {
         user_id : req.body.user_id,
@@ -214,7 +217,10 @@ app.put('/api/user/stats', (req,res) =>{
 
 
 })
-/*  TODO: put & get med statistik över antal frågor
+
+
+
+/*
 app.put("/api/bok/:id", (req, res, next) => {
     const data = {
         bokTitel: req.body.bokTitel,
