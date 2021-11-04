@@ -78,23 +78,25 @@ app.get('/api/quizzes/:category/:type/:nr', (req, res, next) => {
         })
     })
 })
-app.get('/api/quizzes/getbycat/:category/:nr', (req,res) =>{
-    const sql = 'SELECT * FROM quiz WHERE category = ? ORDER BY RANDOM() LIMIT ?'
-    const params = [req.params.category, req.params.nr]
-    db.all(sql, params, (err,rows)=>{
-        if(err){
-            res.status(400).json({error:err.message})
+
+app.get('/api/quizzes/get/category/:category/:numba', (req,res) =>{
+    const sql =
+        'SELECT * FROM quiz WHERE category = ? ORDER BY RANDOM() LIMIT ?'
+    const params = [req.params.category, req.params.numba]
+    console.log(req.params.category)
+    console.log(req.params.numba)
+
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({ error: err.message })
             return
         }
         res.json({
-            message:'success',
-            quiz:rows
+            message: 'success',
+            quiz: rows,
         })
-
     })
-
 })
-
 
 app.post('/api/quiz',(req,res) =>{
     const data ={
