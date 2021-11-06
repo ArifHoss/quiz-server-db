@@ -174,6 +174,8 @@ app.post('/api/user', (req, res, next) => {
         username: req.body.username,
         password: bcrypt.hashSync(req.body.password, 10),
         user_level: 'user',
+        questions_answered: 0,
+        questions_correct: 0
     }
     const sqlValidation = 'SELECT * from USER where username = ? OR email = ? '
     const paramsValidation = [data.username, data.email]
@@ -189,8 +191,8 @@ app.post('/api/user', (req, res, next) => {
             })}
         else{
             const sql =
-                'INSERT INTO user (email, username, password, user_level) VALUES (?,?,?,?)'
-            const params = [data.email, data.username, data.password, data.user_level]
+                'INSERT INTO user (email, username, password, user_level, questions_answered, questions_correct) VALUES (?,?,?,?,?,?)'
+            const params = [data.email, data.username, data.password, data.user_level, data.questions_answered, data.questions_correct]
             db.run(sql, params, function (err, result) {
                 if (err) {
                     res.status(400).json({ error: err.message })
